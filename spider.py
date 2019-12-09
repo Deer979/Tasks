@@ -4,28 +4,50 @@ import sys
 sys.stdout=io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
 import requests
 from bs4 import BeautifulSoup
-import re
 
-
-class baidu(object):
+class doubanxingshu(object):
     def __init__(self):
-        self.url = 'https://baike.baidu.com/item/网络爬虫/5162711?fromtitle=%E7%88%AC%E8%99%AB&fromid=22046949&fr=aladdin'
-        self.header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/18.17763'}
+        self.url = root_url
+        self.header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0'}
+        self.bookname = []
+        self.author = []
     
-    def get_h1(self):
+    def get_data(self):
         html = requests.get(self.url,headers=self.header)
         print(html.status_code)
         html.encoding = 'utf-8'
         soup = BeautifulSoup(html.text,'lxml')
-        h1 = soup.select('html body.wiki-lemma.normal div.body-wrapper div.content-wrapper div.content div.main-content dl.lemmaWgt-lemmaTitle.lemmaWgt-lemmaTitle- dd.lemmaWgt-lemmaTitle-title h1')
-        a = soup.select('html body.wiki-lemma.normal div.body-wrapper div.content-wrapper div.content div.main-content div.lemma-summary div.para')
+        bookname = soup.select('.article > ul:nth-child(2) > li > div:nth-child(2) > p:nth-child(3)')
+        author = soup.select('.article > ul:nth-child(2) > li > div:nth-child(2) > h2:nth-child(1) > a:nth-child(1)')
+        
         print(html.apparent_encoding)
-        for h1 in h1:
-            print(h1.text)
-        for a in a:
-            print(a.text)
+        for shuming in bookname:
+            print(shuming.text)
+    
+        for author in author:
+            print(author.string)
+    
+    #形成文件
+        fout = open('豆瓣新书.html','w')
+        
+        fout.write("<html>")
+        fout.write("<body>")
+        fout.write("<table>")
+        for data1 in bookname:
+            fout.write("<tr>")
+            fout.write("<td>%s</td>"%data1.text)
+            fout.write("</tr>")
+        for data2 in author:
+            fout.write("<tr>")
+            fout.write("<td>%s</td>"%data2.text)
+            fout.write("</tr>")
+
+        fout.write("<table>")
+        fout.write("</body>")
+        fout.write("</html>")
         
 if __name__ == "__main__":
-    wangye = baidu()
-    wangye.get_h1()
+    root_url = 'https://book.douban.com/latest?icn=index-latestbook-all'
+    wangye = doubanxingshu()
+    wangye.get_data()
 
