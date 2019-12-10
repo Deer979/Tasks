@@ -17,34 +17,37 @@ class doubanxingshu(object):
         print(html.status_code)
         html.encoding = 'utf-8'
         soup = BeautifulSoup(html.text,'lxml')
-        bookname = soup.select('.article > ul:nth-child(2) > li > div:nth-child(2) > p:nth-child(3)')
-        author = soup.select('.article > ul:nth-child(2) > li > div:nth-child(2) > h2:nth-child(1) > a:nth-child(1)')
-        
+        shuming = soup.select('.article > ul:nth-child(2) > li > div:nth-child(2) > p:nth-child(3)')
+        zhuozhe = soup.select('.article > ul:nth-child(2) > li > div:nth-child(2) > h2:nth-child(1) > a:nth-child(1)')
         print(html.apparent_encoding)
-        for shuming in bookname:
-            print(shuming.text)
-    
-        for author in author:
-            print(author.string)
+        author_bookname = []
+
+        for x,y in zip(zhuozhe,shuming):
+            print(x.text)
+            print(y.text)
+            author_bookname.append(x.text)
+            author_bookname.append(y.text)
     
     #形成文件
-        fout = open('豆瓣新书.html','w')
+        fout = open('豆瓣新书速递.html','w')
         
-        fout.write("<html>")
-        fout.write("<body>")
-        fout.write("<table>")
-        for data1 in bookname:
-            fout.write("<tr>")
-            fout.write("<td>%s</td>"%data1.text)
-            fout.write("</tr>")
-        for data2 in author:
-            fout.write("<tr>")
-            fout.write("<td>%s</td>"%data2.text)
-            fout.write("</tr>")
+        fout.write("<!DOCTYPE html>\n")
+        fout.write("<html lang='en'>\n")
+        fout.write("<mate charset='UTF-8'>")
+        fout.write("<head>")
+        fout.write("<body style='text-aling:center;'>\n")
+        fout.write("<table style='margin:auto;'>\n")
 
-        fout.write("<table>")
-        fout.write("</body>")
-        fout.write("</html>")
+        for data in author_bookname:
+            fout.write("<tr>\n")
+            fout.write("<td style='text-align:center;'>%s</td>\n"%data)
+            fout.write("</tr>\n")
+
+        fout.write("</table>\n")
+        fout.write("</body>\n")
+        fout.write("</head>")
+        fout.write("</html>\n")
+        fout.close()
         
 if __name__ == "__main__":
     root_url = 'https://book.douban.com/latest?icn=index-latestbook-all'
